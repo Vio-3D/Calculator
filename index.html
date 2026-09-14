@@ -36,7 +36,7 @@
     color:var(--text);
     font-family:'Inter',system-ui,sans-serif;
     min-height:100vh;
-    padding-bottom:96px;
+    padding-bottom:32px;
   }
   .wrap{max-width:480px;margin:0 auto;padding:20px 16px 0;}
   header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
@@ -85,12 +85,21 @@
   }
   .person-card.p0{background:var(--p0-bg);border-color:#2C4744;}
   .person-card.p1{background:var(--p1-bg);border-color:#4A3527;}
-  .person-card .name{font-weight:600;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .person-card .name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;}
+  .add-plus{
+    width:26px;height:26px;border-radius:50%;border:none;
+    background:var(--gold);color:#241A08;font-size:16px;font-weight:700;
+    line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    padding:0;flex-shrink:0;
+  }
+  .add-plus:active{transform:scale(0.93);}
   .person-card.p0 .name{color:var(--p0);}
   .person-card.p1 .name{color:var(--p1);}
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
   .person-card.p0 .dot{background:var(--p0);}
   .person-card.p1 .dot{background:var(--p1);}
+  .edit-pencil{font-style:normal;font-size:11px;color:var(--text-faint);margin-left:auto;}
   .person-card .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:20px;}
   .person-card .num span{font-size:12px;color:var(--text-dim);font-weight:400;margin-left:3px;}
 
@@ -110,16 +119,6 @@
   .entry-row .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:15px;}
   .entry-row .del{background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:4px 6px;}
   .entry-row .del:active{color:var(--danger);}
-
-  .fab{
-    position:fixed;left:50%;transform:translateX(-50%);bottom:22px;
-    background:var(--gold);color:#241A08;border:none;
-    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
-    padding:14px 26px;border-radius:30px;cursor:pointer;
-    box-shadow:0 6px 20px rgba(0,0,0,.4);
-    display:flex;align-items:center;gap:8px;max-width:440px;width:calc(100% - 32px);justify-content:center;
-  }
-  .fab:active{transform:translateX(-50%) scale(0.97);}
 
   .sheet-overlay{
     position:fixed;inset:0;background:rgba(0,0,0,.55);
@@ -158,10 +157,57 @@
 
   .names-field{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
   .names-field .dot{width:10px;height:10px;}
+
+  .lock-screen{
+    position:fixed;inset:0;background:var(--bg);
+    display:flex;align-items:center;justify-content:center;z-index:100;
+    padding:24px;
+  }
+  .lock-card{
+    max-width:320px;width:100%;text-align:center;
+  }
+  .lock-dot{
+    width:52px;height:52px;border-radius:50%;background:var(--surface-2);
+    border:1px solid var(--gold-dim);margin:0 auto 16px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Roboto Slab',serif;font-weight:700;font-size:20px;color:var(--gold);
+  }
+  .lock-dot::before{content:'V';}
+  .lock-card h2{font-family:'Roboto Slab',serif;font-size:19px;margin:0 0 6px;}
+  .lock-card p{color:var(--text-dim);font-size:13px;margin:0 0 20px;}
+  .lock-card input{text-align:center;font-size:22px;letter-spacing:8px;}
+  .lock-card .err{display:none;margin-top:10px;}
+
+  .pattern-wrap{display:flex;justify-content:center;margin-top:6px;}
+  .pattern-svg{width:220px;height:220px;touch-action:none;}
+  .pline{fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+  .pdot{fill:var(--surface-2);stroke:var(--border);stroke-width:2;transition:fill .1s;}
+  .pdot.active{fill:var(--gold);stroke:var(--gold);}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="lock-screen" id="lockScreen" style="display:none;">
+  <div class="lock-card">
+    <div class="lock-dot"></div>
+    <h2>Registru vânzări</h2>
+    <p id="lockSubtitle">Introdu codul PIN pentru a intra</p>
+    <div id="lockPinSection">
+      <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPin()">
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="verifyPin()">Deblochează</button>
+    </div>
+    <div id="lockPatternSection" style="display:none;">
+      <div class="pattern-wrap">
+        <svg id="lockPatternSvg" class="pattern-svg" viewBox="0 0 240 240">
+          <polyline id="lockPatternLine" class="pline"></polyline>
+          <g id="lockPatternDots"></g>
+        </svg>
+      </div>
+    </div>
+    <div class="err" id="pinErr">Cod incorect. Încearcă din nou.</div>
+    <div class="err" id="patternErrLock">Model incorect. Încearcă din nou.</div>
+  </div>
+</div>
+<div class="wrap" id="mainWrap">
   <header>
     <h1>Registru vânzări</h1>
     <button class="settings-btn" onclick="openSettings()" aria-label="Setări">⚙</button>
@@ -180,11 +226,21 @@
 
   <div class="persons">
     <div class="person-card p0">
-      <div class="name"><span class="dot"></span><span id="p0label">Persoana 1</span></div>
+      <div class="card-top">
+        <div class="name" onclick="openSettings()" style="cursor:pointer;">
+          <span class="dot"></span><span id="p0label">Persoana 1</span>
+        </div>
+        <button class="add-plus" onclick="openAdd(0)" aria-label="Adaugă sumă pentru persoana 1">+</button>
+      </div>
       <div class="num" id="p0total">0<span>lei</span></div>
     </div>
     <div class="person-card p1">
-      <div class="name"><span class="dot"></span><span id="p1label">Persoana 2</span></div>
+      <div class="card-top">
+        <div class="name" onclick="openSettings()" style="cursor:pointer;">
+          <span class="dot"></span><span id="p1label">Persoana 2</span>
+        </div>
+        <button class="add-plus" onclick="openAdd(1)" aria-label="Adaugă sumă pentru persoana 2">+</button>
+      </div>
       <div class="num" id="p1total">0<span>lei</span></div>
     </div>
   </div>
@@ -192,8 +248,6 @@
   <div class="section-title">Vânzări din lună</div>
   <div id="entriesList"></div>
 </div>
-
-<button class="fab" onclick="openAdd()">+ Adaugă o sumă</button>
 
 <div class="sheet-overlay" id="addOverlay">
   <div class="sheet">
@@ -236,6 +290,36 @@
       <button class="btn btn-secondary" onclick="closeSettings()">Închide</button>
       <button class="btn btn-primary" onclick="saveSettings()">Salvează</button>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
+      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Backup date</label>
+      <div class="sheet-actions">
+        <button class="btn btn-secondary" onclick="exportBackup()">⬇ Descarcă backup</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Restaurează</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-faint);margin-top:8px;">Salvează fișierul într-un loc sigur (email, Drive). Restaurarea înlocuiește complet datele curente.</div>
+      <input type="file" id="importFile" accept=".json,application/json,text/plain" style="display:none" onchange="handleImportFile(event)">
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
+      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Blocare la deschidere</label>
+      <div class="toggle-group" style="margin-bottom:12px;">
+        <button type="button" class="btn btn-secondary" onclick="showSecurityMode('none')">Fără</button>
+        <button type="button" class="btn btn-secondary" onclick="showSecurityMode('pin')">Cod PIN</button>
+        <button type="button" class="btn btn-secondary" onclick="showSecurityMode('pattern')">Model</button>
+      </div>
+      <div id="secPinBox" style="display:none;">
+        <input type="password" id="pinSettingInput" inputmode="numeric" maxlength="6" placeholder="4-6 cifre">
+        <button class="btn btn-primary" style="width:100%;margin-top:10px;" onclick="setPin()">Salvează codul PIN</button>
+      </div>
+      <div id="secPatternBox" style="display:none;">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;text-align:center;">Desenează un model nou (minim 4 puncte)</div>
+        <div class="pattern-wrap">
+          <svg id="setPatternSvg" class="pattern-svg" viewBox="0 0 240 240">
+            <polyline id="setPatternLine" class="pline"></polyline>
+            <g id="setPatternDots"></g>
+          </svg>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -275,6 +359,10 @@ function loadData(){
       const parsed = JSON.parse(raw);
       if(parsed && Array.isArray(parsed.entries)){
         data = parsed;
+        if(data.pin && !data.security){
+          data.security = {type:'pin', value: data.pin};
+        }
+        delete data.pin;
       }
     }
   }catch(e){
@@ -368,12 +456,13 @@ function openMonthPicker(){
 }
 function closeMonthPicker(){ document.getElementById('monthOverlay').classList.remove('open'); }
 
-function openAdd(){
-  selectPerson(0);
+function openAdd(person){
+  selectPerson(person === 1 ? 1 : 0);
   document.getElementById('amountInput').value = '';
   document.getElementById('dateInput').value = todayDateStr();
   document.getElementById('addErr').style.display = 'none';
   document.getElementById('addOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('amountInput').focus(), 150);
 }
 function closeAdd(){ document.getElementById('addOverlay').classList.remove('open'); }
 
@@ -432,7 +521,209 @@ async function saveSettings(){
   render();
 }
 
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = todayDateStr();
+  a.href = url;
+  a.download = 'backup-vanzari-' + stamp + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function handleImportFile(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const parsed = JSON.parse(e.target.result);
+      if(!parsed || !Array.isArray(parsed.entries) || !Array.isArray(parsed.names)){
+        alert('Fișierul nu are formatul corect de backup.');
+        return;
+      }
+      const ok = confirm('Sigur vrei să înlocuiești datele curente cu cele din backup? Această acțiune nu poate fi anulată.');
+      if(!ok) return;
+      data = parsed;
+      saveData();
+      render();
+      closeSettings();
+    }catch(err){
+      alert('Fișierul nu poate fi citit. Verifică dacă e un backup valid.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function createPatternController(svgId, groupId, lineId, opts){
+  const svg = document.getElementById(svgId);
+  const group = document.getElementById(groupId);
+  const line = document.getElementById(lineId);
+  const coords = [];
+  for(let i=0;i<9;i++){
+    const row = Math.floor(i/3), col = i%3;
+    coords.push({x:40+col*80, y:40+row*80});
+  }
+  group.innerHTML = '';
+  coords.forEach((c,i)=>{
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx', c.x);
+    circle.setAttribute('cy', c.y);
+    circle.setAttribute('r', 11);
+    circle.setAttribute('class','pdot');
+    circle.setAttribute('data-i', i);
+    group.appendChild(circle);
+  });
+  let path = [];
+  let drawing = false;
+
+  function getSvgPoint(evt){
+    const rect = svg.getBoundingClientRect();
+    const scaleX = 240/rect.width;
+    const scaleY = 240/rect.height;
+    return {x:(evt.clientX-rect.left)*scaleX, y:(evt.clientY-rect.top)*scaleY};
+  }
+  function updateLine(){
+    line.setAttribute('points', path.map(i=>coords[i].x+','+coords[i].y).join(' '));
+  }
+  function setActive(i,active){
+    const dot = group.querySelector('[data-i="'+i+'"]');
+    if(dot) dot.classList.toggle('active', active);
+  }
+  function reset(){
+    path.forEach(i=>setActive(i,false));
+    path = [];
+    updateLine();
+  }
+  function handleMove(evt){
+    if(!drawing) return;
+    const p = getSvgPoint(evt);
+    coords.forEach((c,i)=>{
+      if(path.includes(i)) return;
+      if(Math.hypot(p.x-c.x,p.y-c.y) < 24){
+        path.push(i);
+        setActive(i,true);
+        updateLine();
+      }
+    });
+  }
+  function handleStart(evt){
+    drawing = true;
+    reset();
+    handleMove(evt);
+  }
+  function handleEnd(){
+    if(!drawing) return;
+    drawing = false;
+    const result = path.slice();
+    setTimeout(reset, 350);
+    opts.onComplete(result);
+  }
+  svg.addEventListener('pointerdown', e=>{ svg.setPointerCapture(e.pointerId); handleStart(e); });
+  svg.addEventListener('pointermove', handleMove);
+  svg.addEventListener('pointerup', handleEnd);
+  svg.addEventListener('pointercancel', handleEnd);
+}
+
+createPatternController('lockPatternSvg','lockPatternDots','lockPatternLine', {
+  onComplete: function(arr){
+    if(arr.length === 0) return;
+    if(data.security && arr.join(',') === data.security.value){
+      document.getElementById('patternErrLock').style.display = 'none';
+      unlockApp();
+    }else{
+      document.getElementById('patternErrLock').style.display = 'block';
+    }
+  }
+});
+
+createPatternController('setPatternSvg','setPatternDots','setPatternLine', {
+  onComplete: function(arr){
+    if(arr.length < 4){
+      if(arr.length > 0) alert('Conectează cel puțin 4 puncte.');
+      return;
+    }
+    data.security = {type:'pattern', value: arr.join(',')};
+    saveData();
+    alert('Model de deblocare salvat.');
+    closeSettings();
+  }
+});
+
+function showSecurityMode(mode){
+  document.getElementById('secPinBox').style.display = mode==='pin' ? 'block' : 'none';
+  document.getElementById('secPatternBox').style.display = mode==='pattern' ? 'block' : 'none';
+  if(mode === 'none'){
+    if(data.security){
+      const ok = confirm('Sigur vrei să elimini blocarea la deschidere?');
+      if(!ok) return;
+      data.security = null;
+      saveData();
+      alert('Blocarea a fost eliminată.');
+    }
+  }
+}
+
+function unlockApp(){
+  document.getElementById('pinInput').value = '';
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('mainWrap').style.display = '';
+}
+
+function checkLock(){
+  if(data.security && data.security.type && data.security.value){
+    document.getElementById('mainWrap').style.display = 'none';
+    document.getElementById('lockScreen').style.display = 'flex';
+    document.getElementById('pinErr').style.display = 'none';
+    document.getElementById('patternErrLock').style.display = 'none';
+    if(data.security.type === 'pin'){
+      document.getElementById('lockSubtitle').textContent = 'Introdu codul PIN pentru a intra';
+      document.getElementById('lockPinSection').style.display = 'block';
+      document.getElementById('lockPatternSection').style.display = 'none';
+      setTimeout(()=>document.getElementById('pinInput').focus(), 100);
+    }else{
+      document.getElementById('lockSubtitle').textContent = 'Desenează modelul pentru a intra';
+      document.getElementById('lockPinSection').style.display = 'none';
+      document.getElementById('lockPatternSection').style.display = 'block';
+    }
+  }else{
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainWrap').style.display = '';
+    }
+}
+
+function verifyPin(){
+  const val = document.getElementById('pinInput').value;
+  const errEl = document.getElementById('pinErr');
+  if(data.security && val === data.security.value){
+    errEl.style.display = 'none';
+    unlockApp();
+  }else{
+    errEl.style.display = 'block';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+
+function setPin(){
+  const val = document.getElementById('pinSettingInput').value.trim();
+  if(!val || !/^[0-9]{4,6}$/.test(val)){
+    alert('PIN-ul trebuie să conțină doar cifre, 4-6 caractere.');
+    return;
+  }
+  data.security = {type:'pin', value: val};
+  saveData();
+  document.getElementById('pinSettingInput').value = '';
+  alert('Cod PIN setat. Se va cere la următoarea deschidere a aplicației.');
+  closeSettings();
+}
+
 loadData();
+checkLock();
 </script>
 </body>
 </html>

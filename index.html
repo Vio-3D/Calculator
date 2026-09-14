@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Registru Vânzări</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVnaXN0cnUgVsOibnrEg3JpIiwic2hvcnRfbmFtZSI6IlbDom56xINyaSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMTAxNjE0IiwidGhlbWVfY29sb3IiOiIjMTAxNjE0In0=">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101614;
+    --surface:#1B2422;
+    --surface-2:#232E2B;
+    --border:#2E3835;
+    --gold:#D9A544;
+    --gold-dim:#8A6C33;
+    --p0:#4FA3A0;
+    --p0-bg:#1A2C2B;
+    --p1:#C97B4A;
+    --p1-bg:#2A2019;
+    --text:#EDE8DC;
+    --text-dim:#9BA79E;
+    --text-faint:#6C7A73;
+    --danger:#C25450;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:96px;
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:20px 16px 0;}
+  header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px;}
+  header h1{
+    font-family:'Roboto Slab',serif;
+    font-weight:700;
+    font-size:21px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  header .settings-btn{
+    background:none;border:none;color:var(--text-faint);
+    font-size:20px;padding:6px;cursor:pointer;line-height:1;
+  }
+  .month-nav{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:14px;padding:10px 6px;margin-bottom:16px;
+  }
+  .month-nav button{
+    background:none;border:none;color:var(--text-dim);font-size:20px;
+    width:40px;height:40px;border-radius:10px;cursor:pointer;
+  }
+  .month-nav button:active{background:var(--surface-2);}
+  .month-label{
+    font-weight:600;font-size:15px;text-align:center;flex:1;
+    text-transform:capitalize;cursor:pointer;
+  }
+  .month-label small{display:block;font-weight:400;color:var(--text-faint);font-size:11px;margin-top:1px;}
+
+  .combined-card{
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--gold-dim);
+    border-radius:16px;padding:18px 18px 16px;margin-bottom:14px;
+  }
+  .combined-card .lbl{color:var(--gold);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .combined-card .num{
+    font-family:'Roboto Slab',serif;font-weight:700;font-size:34px;
+    margin-top:4px;color:var(--text);
+  }
+  .combined-card .num span{font-size:18px;color:var(--text-dim);font-weight:500;margin-left:6px;}
+
+  .persons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .person-card{
+    border-radius:14px;padding:14px;border:1px solid var(--border);
+  }
+  .person-card.p0{background:var(--p0-bg);border-color:#2C4744;}
+  .person-card.p1{background:var(--p1-bg);border-color:#4A3527;}
+  .person-card .name{font-weight:600;font-size:13px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+  .person-card.p0 .name{color:var(--p0);}
+  .person-card.p1 .name{color:var(--p1);}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .person-card.p0 .dot{background:var(--p0);}
+  .person-card.p1 .dot{background:var(--p1);}
+  .person-card .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:20px;}
+  .person-card .num span{font-size:12px;color:var(--text-dim);font-weight:400;margin-left:3px;}
+
+  .section-title{font-size:13px;font-weight:600;color:var(--text-dim);margin:20px 2px 8px;text-transform:uppercase;letter-spacing:.03em;}
+  .empty{
+    text-align:center;color:var(--text-faint);font-size:14px;
+    padding:36px 12px;border:1px dashed var(--border);border-radius:14px;
+  }
+  .day-group{margin-bottom:14px;}
+  .day-header{font-size:12px;color:var(--text-faint);margin:0 2px 6px;font-weight:500;}
+  .entry-row{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:11px 13px;margin-bottom:6px;
+  }
+  .entry-left{display:flex;align-items:center;gap:10px;}
+  .entry-row .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:15px;}
+  .entry-row .del{background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:4px 6px;}
+  .entry-row .del:active{color:var(--danger);}
+
+  .fab{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:22px;
+    background:var(--gold);color:#241A08;border:none;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:15px;
+    padding:14px 26px;border-radius:30px;cursor:pointer;
+    box-shadow:0 6px 20px rgba(0,0,0,.4);
+    display:flex;align-items:center;gap:8px;max-width:440px;width:calc(100% - 32px);justify-content:center;
+  }
+  .fab:active{transform:translateX(-50%) scale(0.97);}
+
+  .sheet-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);
+    display:none;align-items:flex-end;justify-content:center;z-index:50;
+  }
+  .sheet-overlay.open{display:flex;}
+  .sheet{
+    background:var(--surface);width:100%;max-width:480px;
+    border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    border-top:1px solid var(--border);
+  }
+  .sheet h2{font-family:'Roboto Slab',serif;font-size:18px;margin:0 0 16px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:500;}
+  .toggle-group{display:flex;gap:8px;}
+  .toggle-btn{
+    flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--text-dim);font-weight:600;font-size:14px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .toggle-btn.active.p0{border-color:var(--p0);color:var(--p0);background:var(--p0-bg);}
+  .toggle-btn.active.p1{border-color:var(--p1);color:var(--p1);background:var(--p1-bg);}
+  input[type=number], input[type=date], input[type=text]{
+    width:100%;background:var(--surface-2);border:1px solid var(--border);
+    color:var(--text);font-size:16px;padding:12px 13px;border-radius:12px;
+    font-family:'Inter',sans-serif;
+  }
+  input:focus{outline:none;border-color:var(--gold-dim);}
+  .sheet-actions{display:flex;gap:10px;margin-top:6px;}
+  .btn{
+    flex:1;padding:13px;border-radius:12px;border:none;font-weight:600;font-size:15px;cursor:pointer;
+  }
+  .btn-primary{background:var(--gold);color:#241A08;}
+  .btn-secondary{background:var(--surface-2);color:var(--text-dim);border:1px solid var(--border);}
+  .err{color:var(--danger);font-size:12px;margin-top:6px;display:none;}
+
+  .names-field{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+  .names-field .dot{width:10px;height:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Registru vânzări</h1>
+    <button class="settings-btn" onclick="openSettings()" aria-label="Setări">⚙</button>
+  </header>
+
+  <div class="month-nav">
+    <button onclick="changeMonth(-1)" aria-label="Luna precedentă">‹</button>
+    <div class="month-label" id="monthLabel" onclick="openMonthPicker()"></div>
+    <button onclick="changeMonth(1)" aria-label="Luna următoare">›</button>
+  </div>
+
+  <div class="combined-card">
+    <div class="lbl">Total comun</div>
+    <div class="num" id="combinedTotal">0<span>lei</span></div>
+  </div>
+
+  <div class="persons">
+    <div class="person-card p0">
+      <div class="name"><span class="dot"></span><span id="p0label">Persoana 1</span></div>
+      <div class="num" id="p0total">0<span>lei</span></div>
+    </div>
+    <div class="person-card p1">
+      <div class="name"><span class="dot"></span><span id="p1label">Persoana 2</span></div>
+      <div class="num" id="p1total">0<span>lei</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Vânzări din lună</div>
+  <div id="entriesList"></div>
+</div>
+
+<button class="fab" onclick="openAdd()">+ Adaugă o sumă</button>
+
+<div class="sheet-overlay" id="addOverlay">
+  <div class="sheet">
+    <h2>Adaugă o sumă</h2>
+    <div class="field">
+      <label>Cui îi aparține</label>
+      <div class="toggle-group">
+        <button type="button" class="toggle-btn p0" id="toggleP0" onclick="selectPerson(0)"></button>
+        <button type="button" class="toggle-btn p1" id="toggleP1" onclick="selectPerson(1)"></button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Sumă (lei)</label>
+      <input type="number" id="amountInput" inputmode="decimal" placeholder="0" min="0" step="0.01">
+    </div>
+    <div class="field">
+      <label>Data</label>
+      <input type="date" id="dateInput">
+      <div class="err" id="addErr">Introdu o sumă mai mare decât 0.</div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" onclick="closeAdd()">Anulează</button>
+      <button class="btn btn-primary" onclick="submitAdd()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="settingsOverlay">
+  <div class="sheet">
+    <h2>Setări</h2>
+    <div class="names-field">
+      <span class="dot" style="background:var(--p0)"></span>
+      <input type="text" id="nameInput0" placeholder="Persoana 1">
+    </div>
+    <div class="names-field">
+      <span class="dot" style="background:var(--p1)"></span>
+      <input type="text" id="nameInput1" placeholder="Persoana 2">
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" onclick="closeSettings()">Închide</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Salvează</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="monthOverlay">
+  <div class="sheet">
+    <h2>Alege luna</h2>
+    <div id="monthList" style="max-height:50vh;overflow:auto;"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" onclick="closeMonthPicker()">Închide</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'vanzari-data-v1';
+const LUNI = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+let data = { names: ['Persoana 1','Persoana 2'], entries: [] };
+let currentMonth = todayMonthKey();
+let selectedPerson = 0;
+
+function todayMonthKey(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function todayDateStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function fmt(n){
+  return Number(n).toLocaleString('ro-RO',{maximumFractionDigits:2});
+}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.entries)){
+        data = parsed;
+      }
+    }
+  }catch(e){
+    console.log('Nicio dată salvată încă, pornim de la zero.');
+  }
+  render();
+}
+
+function saveData(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }catch(e){
+    console.error('Eroare la salvare:', e);
+  }
+}
+
+function entriesForMonth(monthKey){
+  return data.entries.filter(e => e.date.slice(0,7) === monthKey);
+}
+
+function render(){
+  const [y,m] = currentMonth.split('-').map(Number);
+  document.getElementById('monthLabel').innerHTML = LUNI[m-1] + ' ' + y + '<small>atinge pentru a schimba luna</small>';
+  document.getElementById('p0label').textContent = data.names[0];
+  document.getElementById('p1label').textContent = data.names[1];
+
+  const monthEntries = entriesForMonth(currentMonth);
+  let t0 = 0, t1 = 0;
+  monthEntries.forEach(e => { if(e.person === 0) t0 += Number(e.amount); else t1 += Number(e.amount); });
+
+  document.getElementById('p0total').innerHTML = fmt(t0) + '<span>lei</span>';
+  document.getElementById('p1total').innerHTML = fmt(t1) + '<span>lei</span>';
+  document.getElementById('combinedTotal').innerHTML = fmt(t0+t1) + '<span>lei</span>';
+
+  const listEl = document.getElementById('entriesList');
+  listEl.innerHTML = '';
+  if(monthEntries.length === 0){
+    listEl.innerHTML = '<div class="empty">Nicio vânzare înregistrată în această lună.</div>';
+    return;
+  }
+
+  const byDay = {};
+  monthEntries.forEach(e => {
+    if(!byDay[e.date]) byDay[e.date] = [];
+    byDay[e.date].push(e);
+  });
+  const days = Object.keys(byDay).sort().reverse();
+
+  days.forEach(day => {
+    const group = document.createElement('div');
+    group.className = 'day-group';
+    const [dy,dm,dd] = day.split('-');
+    const dateObj = new Date(day+'T00:00:00');
+    const dayLabel = dateObj.toLocaleDateString('ro-RO',{day:'numeric',month:'long',weekday:'short'});
+    let html = '<div class="day-header">'+dayLabel+'</div>';
+    byDay[day].sort((a,b)=> b.id.localeCompare(a.id)).forEach(e => {
+      const color = e.person === 0 ? 'var(--p0)' : 'var(--p1)';
+      const pname = data.names[e.person];
+      html += '<div class="entry-row"><div class="entry-left"><span class="dot" style="background:'+color+'"></span><span style="font-size:13px;color:var(--text-dim)">'+pname+'</span></div><div style="display:flex;align-items:center;gap:10px"><span class="num">'+fmt(e.amount)+' <span style="font-size:11px;color:var(--text-dim);font-weight:400">lei</span></span><button class="del" onclick="deleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div></div>';
+    });
+    group.innerHTML = html;
+    listEl.appendChild(group);
+  });
+}
+
+function changeMonth(delta){
+  const [y,m] = currentMonth.split('-').map(Number);
+  const d = new Date(y, m-1+delta, 1);
+  currentMonth = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  render();
+}
+
+function openMonthPicker(){
+  const months = Array.from(new Set(data.entries.map(e => e.date.slice(0,7))));
+  if(!months.includes(currentMonth)) months.push(currentMonth);
+  months.sort().reverse();
+  const listEl = document.getElementById('monthList');
+  listEl.innerHTML = '';
+  months.forEach(mk => {
+    const [y,m] = mk.split('-').map(Number);
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary';
+    btn.style.width = '100%';
+    btn.style.marginBottom = '8px';
+    btn.style.textTransform = 'capitalize';
+    btn.textContent = LUNI[m-1] + ' ' + y;
+    btn.onclick = () => { currentMonth = mk; closeMonthPicker(); render(); };
+    listEl.appendChild(btn);
+  });
+  document.getElementById('monthOverlay').classList.add('open');
+}
+function closeMonthPicker(){ document.getElementById('monthOverlay').classList.remove('open'); }
+
+function openAdd(){
+  selectPerson(0);
+  document.getElementById('amountInput').value = '';
+  document.getElementById('dateInput').value = todayDateStr();
+  document.getElementById('addErr').style.display = 'none';
+  document.getElementById('addOverlay').classList.add('open');
+}
+function closeAdd(){ document.getElementById('addOverlay').classList.remove('open'); }
+
+function selectPerson(idx){
+  selectedPerson = idx;
+  const t0 = document.getElementById('toggleP0');
+  const t1 = document.getElementById('toggleP1');
+  t0.textContent = data.names[0];
+  t1.textContent = data.names[1];
+  t0.classList.toggle('active', idx===0);
+  t1.classList.toggle('active', idx===1);
+}
+
+async function submitAdd(){
+  const amountVal = document.getElementById('amountInput').value;
+  const dateVal = document.getElementById('dateInput').value;
+  const amount = parseFloat(amountVal);
+  const errEl = document.getElementById('addErr');
+  if(!amountVal || isNaN(amount) || amount <= 0 || !dateVal){
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+    person: selectedPerson,
+    amount: Math.round(amount*100)/100,
+    date: dateVal
+  };
+  data.entries.push(entry);
+  currentMonth = dateVal.slice(0,7);
+  await saveData();
+  closeAdd();
+  render();
+}
+
+async function deleteEntry(id){
+  data.entries = data.entries.filter(e => e.id !== id);
+  await saveData();
+  render();
+}
+
+function openSettings(){
+  document.getElementById('nameInput0').value = data.names[0];
+  document.getElementById('nameInput1').value = data.names[1];
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('open'); }
+async function saveSettings(){
+  const n0 = document.getElementById('nameInput0').value.trim();
+  const n1 = document.getElementById('nameInput1').value.trim();
+  data.names[0] = n0 || 'Persoana 1';
+  data.names[1] = n1 || 'Persoana 2';
+  await saveData();
+  closeSettings();
+  render();
+}
+
+loadData();
+</script>
+</body>
+</html>

@@ -49,7 +49,8 @@
   }
   header .settings-btn{
     background:none;border:none;color:var(--text-faint);
-    font-size:20px;padding:6px;cursor:pointer;line-height:1;
+    font-size:24px;padding:10px;cursor:pointer;line-height:1;
+    min-width:44px;min-height:44px;
   }
   .month-nav{
     display:flex;align-items:center;justify-content:space-between;
@@ -57,8 +58,8 @@
     border-radius:14px;padding:10px 6px;margin-bottom:16px;
   }
   .month-nav button{
-    background:none;border:none;color:var(--text-dim);font-size:20px;
-    width:40px;height:40px;border-radius:10px;cursor:pointer;
+    background:none;border:none;color:var(--text-dim);font-size:22px;
+    width:46px;height:46px;border-radius:10px;cursor:pointer;
   }
   .month-nav button:active{background:var(--surface-2);}
   .month-label{
@@ -88,8 +89,8 @@
   .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
   .person-card .name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;}
   .add-plus{
-    width:26px;height:26px;border-radius:50%;border:none;
-    background:var(--gold);color:#241A08;font-size:16px;font-weight:700;
+    width:38px;height:38px;border-radius:50%;border:none;
+    background:var(--gold);color:#241A08;font-size:20px;font-weight:700;
     line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
     padding:0;flex-shrink:0;
   }
@@ -102,6 +103,11 @@
   .edit-pencil{font-style:normal;font-size:11px;color:var(--text-faint);margin-left:auto;}
   .person-card .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:20px;}
   .person-card .num span{font-size:12px;color:var(--text-dim);font-weight:400;margin-left:3px;}
+  .history-link{
+    background:none;border:none;color:var(--text-faint);font-size:12px;font-weight:500;
+    padding:6px 0 0;cursor:pointer;margin-top:2px;
+  }
+  .history-link:active{color:var(--gold);}
 
   .section-title{font-size:13px;font-weight:600;color:var(--text-dim);margin:20px 2px 8px;text-transform:uppercase;letter-spacing:.03em;}
   .empty{
@@ -117,7 +123,7 @@
   }
   .entry-left{display:flex;align-items:center;gap:10px;}
   .entry-row .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:15px;}
-  .entry-row .del{background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:4px 6px;}
+  .entry-row .del{background:none;border:none;color:var(--text-faint);font-size:20px;cursor:pointer;padding:8px 10px;min-width:40px;min-height:40px;}
   .entry-row .del:active{color:var(--danger);}
 
   .sheet-overlay{
@@ -135,21 +141,23 @@
   .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-weight:500;}
   .toggle-group{display:flex;gap:8px;}
   .toggle-btn{
-    flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);
-    background:var(--surface-2);color:var(--text-dim);font-weight:600;font-size:14px;
+    flex:1;padding:15px;border-radius:12px;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--text-dim);font-weight:600;font-size:15px;
     cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+    min-height:50px;
   }
   .toggle-btn.active.p0{border-color:var(--p0);color:var(--p0);background:var(--p0-bg);}
   .toggle-btn.active.p1{border-color:var(--p1);color:var(--p1);background:var(--p1-bg);}
   input[type=number], input[type=date], input[type=text]{
     width:100%;background:var(--surface-2);border:1px solid var(--border);
-    color:var(--text);font-size:16px;padding:12px 13px;border-radius:12px;
-    font-family:'Inter',sans-serif;
+    color:var(--text);font-size:16px;padding:15px 14px;border-radius:12px;
+    font-family:'Inter',sans-serif;min-height:50px;
   }
   input:focus{outline:none;border-color:var(--gold-dim);}
   .sheet-actions{display:flex;gap:10px;margin-top:6px;}
   .btn{
-    flex:1;padding:13px;border-radius:12px;border:none;font-weight:600;font-size:15px;cursor:pointer;
+    flex:1;padding:15px;border-radius:12px;border:none;font-weight:600;font-size:16px;cursor:pointer;
+    min-height:50px;
   }
   .btn-primary{background:var(--gold);color:#241A08;}
   .btn-secondary{background:var(--surface-2);color:var(--text-dim);border:1px solid var(--border);}
@@ -233,6 +241,7 @@
         <button class="add-plus" onclick="openAdd(0)" aria-label="Adaugă sumă pentru persoana 1">+</button>
       </div>
       <div class="num" id="p0total">0<span>lei</span></div>
+      <button class="history-link" onclick="openHistory(0)">Istoric ›</button>
     </div>
     <div class="person-card p1">
       <div class="card-top">
@@ -242,11 +251,9 @@
         <button class="add-plus" onclick="openAdd(1)" aria-label="Adaugă sumă pentru persoana 2">+</button>
       </div>
       <div class="num" id="p1total">0<span>lei</span></div>
+      <button class="history-link" onclick="openHistory(1)">Istoric ›</button>
     </div>
   </div>
-
-  <div class="section-title">Vânzări din lună</div>
-  <div id="entriesList"></div>
 </div>
 
 <div class="sheet-overlay" id="addOverlay">
@@ -320,6 +327,11 @@
         </div>
       </div>
     </div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
+      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Copie a aplicației</label>
+      <button class="btn btn-secondary" style="width:100%;" onclick="downloadAppCopy()">⬇ Descarcă aplicația (index.html)</button>
+      <div style="font-size:12px;color:var(--text-faint);margin-top:8px;">Salvează chiar acest fișier direct pe telefon — util dacă vrei să-l trimiți pe alt dispozitiv sau să ai o copie de rezervă a aplicației în sine (nu a datelor).</div>
+    </div>
   </div>
 </div>
 
@@ -333,8 +345,28 @@
   </div>
 </div>
 
+<div class="sheet-overlay" id="historyOverlay">
+  <div class="sheet">
+    <h2 id="historyTitle">Istoric</h2>
+    <div id="historyList" style="max-height:55vh;overflow:auto;margin-bottom:10px;"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-secondary" onclick="closeHistory()">Închide</button>
+      <button class="btn" style="background:var(--danger);color:#fff;" onclick="confirmDeleteAllForPerson()">Șterge tot</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const STORAGE_KEY = 'vanzari-data-v1';
+
+async function sha256Hex(text){
+  if(!window.crypto || !window.crypto.subtle){
+    throw new Error('insecure-context');
+  }
+  const enc = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(hashBuffer)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
 const LUNI = ['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
 let data = { names: ['Persoana 1','Persoana 2'], entries: [] };
 let currentMonth = todayMonthKey();
@@ -359,10 +391,11 @@ function loadData(){
       const parsed = JSON.parse(raw);
       if(parsed && Array.isArray(parsed.entries)){
         data = parsed;
-        if(data.pin && !data.security){
-          data.security = {type:'pin', value: data.pin};
-        }
         delete data.pin;
+        if(data.security && data.security.value && !data.security.hash){
+          // Format vechi, necriptat — se elimină; utilizatorul trebuie să-l reseteze securizat.
+          data.security = null;
+        }
       }
     }
   }catch(e){
@@ -396,36 +429,6 @@ function render(){
   document.getElementById('p0total').innerHTML = fmt(t0) + '<span>lei</span>';
   document.getElementById('p1total').innerHTML = fmt(t1) + '<span>lei</span>';
   document.getElementById('combinedTotal').innerHTML = fmt(t0+t1) + '<span>lei</span>';
-
-  const listEl = document.getElementById('entriesList');
-  listEl.innerHTML = '';
-  if(monthEntries.length === 0){
-    listEl.innerHTML = '<div class="empty">Nicio vânzare înregistrată în această lună.</div>';
-    return;
-  }
-
-  const byDay = {};
-  monthEntries.forEach(e => {
-    if(!byDay[e.date]) byDay[e.date] = [];
-    byDay[e.date].push(e);
-  });
-  const days = Object.keys(byDay).sort().reverse();
-
-  days.forEach(day => {
-    const group = document.createElement('div');
-    group.className = 'day-group';
-    const [dy,dm,dd] = day.split('-');
-    const dateObj = new Date(day+'T00:00:00');
-    const dayLabel = dateObj.toLocaleDateString('ro-RO',{day:'numeric',month:'long',weekday:'short'});
-    let html = '<div class="day-header">'+dayLabel+'</div>';
-    byDay[day].sort((a,b)=> b.id.localeCompare(a.id)).forEach(e => {
-      const color = e.person === 0 ? 'var(--p0)' : 'var(--p1)';
-      const pname = data.names[e.person];
-      html += '<div class="entry-row"><div class="entry-left"><span class="dot" style="background:'+color+'"></span><span style="font-size:13px;color:var(--text-dim)">'+pname+'</span></div><div style="display:flex;align-items:center;gap:10px"><span class="num">'+fmt(e.amount)+' <span style="font-size:11px;color:var(--text-dim);font-weight:400">lei</span></span><button class="del" onclick="deleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div></div>';
-    });
-    group.innerHTML = html;
-    listEl.appendChild(group);
-  });
 }
 
 function changeMonth(delta){
@@ -499,10 +502,69 @@ async function submitAdd(){
   render();
 }
 
-async function deleteEntry(id){
+let historyPerson = 0;
+
+function openHistory(person){
+  historyPerson = person;
+  renderHistory();
+  document.getElementById('historyOverlay').classList.add('open');
+}
+function closeHistory(){ document.getElementById('historyOverlay').classList.remove('open'); }
+
+function renderHistory(){
+  const [y,m] = currentMonth.split('-').map(Number);
+  document.getElementById('historyTitle').textContent = data.names[historyPerson] + ' — ' + LUNI[m-1] + ' ' + y;
+  const entries = entriesForMonth(currentMonth).filter(e => e.person === historyPerson);
+  const listEl = document.getElementById('historyList');
+  listEl.innerHTML = '';
+  if(entries.length === 0){
+    listEl.innerHTML = '<div class="empty">Nicio vânzare înregistrată în această lună.</div>';
+    return;
+  }
+  const byDay = {};
+  entries.forEach(e => {
+    if(!byDay[e.date]) byDay[e.date] = [];
+    byDay[e.date].push(e);
+  });
+  const days = Object.keys(byDay).sort().reverse();
+  days.forEach(day => {
+    const group = document.createElement('div');
+    group.className = 'day-group';
+    const dateObj = new Date(day+'T00:00:00');
+    const dayLabel = dateObj.toLocaleDateString('ro-RO',{day:'numeric',month:'long',weekday:'short'});
+    let html = '<div class="day-header">'+dayLabel+'</div>';
+    byDay[day].sort((a,b)=> b.id.localeCompare(a.id)).forEach(e => {
+      html += '<div class="entry-row"><div class="entry-left"><span class="num">'+fmt(e.amount)+' <span style="font-size:11px;color:var(--text-dim);font-weight:400">lei</span></span></div><button class="del" onclick="confirmDeleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div>';
+    });
+    group.innerHTML = html;
+    listEl.appendChild(group);
+  });
+}
+
+async function confirmDeleteEntry(id){
+  const entry = data.entries.find(e => e.id === id);
+  if(!entry) return;
+  const ok = confirm('Sigur vrei să ștergi suma de ' + fmt(entry.amount) + ' lei? Această acțiune nu poate fi anulată.');
+  if(!ok) return;
   data.entries = data.entries.filter(e => e.id !== id);
   await saveData();
   render();
+  renderHistory();
+}
+
+async function confirmDeleteAllForPerson(){
+  const [y,m] = currentMonth.split('-').map(Number);
+  const entries = entriesForMonth(currentMonth).filter(e => e.person === historyPerson);
+  if(entries.length === 0){
+    closeHistory();
+    return;
+  }
+  const ok = confirm('Sigur vrei să ștergi TOATE cele ' + entries.length + ' sume ale lui ' + data.names[historyPerson] + ' din ' + LUNI[m-1] + ' ' + y + '? Această acțiune nu poate fi anulată.');
+  if(!ok) return;
+  data.entries = data.entries.filter(e => !(e.person === historyPerson && e.date.slice(0,7) === currentMonth));
+  await saveData();
+  render();
+  renderHistory();
 }
 
 function openSettings(){
@@ -534,6 +596,26 @@ function exportBackup(){
   URL.revokeObjectURL(url);
 }
 
+function isValidBackup(obj){
+  if(!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+  if(!Array.isArray(obj.names) || obj.names.length !== 2) return false;
+  if(!obj.names.every(n => typeof n === 'string' && n.length <= 60)) return false;
+  if(!Array.isArray(obj.entries)) return false;
+  for(const e of obj.entries){
+    if(!e || typeof e !== 'object') return false;
+    if(typeof e.id !== 'string' || e.id.length === 0) return false;
+    if(e.person !== 0 && e.person !== 1) return false;
+    if(typeof e.amount !== 'number' || !isFinite(e.amount) || e.amount <= 0) return false;
+    if(typeof e.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(e.date)) return false;
+  }
+  if(obj.security !== undefined && obj.security !== null){
+    if(typeof obj.security !== 'object') return false;
+    if(obj.security.type !== 'pin' && obj.security.type !== 'pattern') return false;
+    if(typeof obj.security.hash !== 'string' || !/^[0-9a-f]{64}$/.test(obj.security.hash)) return false;
+  }
+  return true;
+}
+
 function handleImportFile(event){
   const file = event.target.files[0];
   if(!file) return;
@@ -541,15 +623,17 @@ function handleImportFile(event){
   reader.onload = function(e){
     try{
       const parsed = JSON.parse(e.target.result);
-      if(!parsed || !Array.isArray(parsed.entries) || !Array.isArray(parsed.names)){
-        alert('Fișierul nu are formatul corect de backup.');
+      if(!isValidBackup(parsed)){
+        alert('Fișierul nu are formatul corect de backup (structură invalidă sau coruptă).');
+        event.target.value = '';
         return;
       }
       const ok = confirm('Sigur vrei să înlocuiești datele curente cu cele din backup? Această acțiune nu poate fi anulată.');
-      if(!ok) return;
-      data = parsed;
+      if(!ok){ event.target.value = ''; return; }
+      data = { names: parsed.names, entries: parsed.entries, security: parsed.security || null };
       saveData();
       render();
+      checkLock();
       closeSettings();
     }catch(err){
       alert('Fișierul nu poate fi citit. Verifică dacă e un backup valid.');
@@ -630,27 +714,37 @@ function createPatternController(svgId, groupId, lineId, opts){
 }
 
 createPatternController('lockPatternSvg','lockPatternDots','lockPatternLine', {
-  onComplete: function(arr){
+  onComplete: async function(arr){
     if(arr.length === 0) return;
-    if(data.security && arr.join(',') === data.security.value){
-      document.getElementById('patternErrLock').style.display = 'none';
-      unlockApp();
-    }else{
-      document.getElementById('patternErrLock').style.display = 'block';
+    try{
+      const hash = await sha256Hex(arr.join(','));
+      if(data.security && hash === data.security.hash){
+        document.getElementById('patternErrLock').style.display = 'none';
+        unlockApp();
+      }else{
+        document.getElementById('patternErrLock').style.display = 'block';
+      }
+    }catch(e){
+      alert('Blocarea securizată necesită deschiderea aplicației prin linkul https.');
     }
   }
 });
 
 createPatternController('setPatternSvg','setPatternDots','setPatternLine', {
-  onComplete: function(arr){
+  onComplete: async function(arr){
     if(arr.length < 4){
       if(arr.length > 0) alert('Conectează cel puțin 4 puncte.');
       return;
     }
-    data.security = {type:'pattern', value: arr.join(',')};
-    saveData();
-    alert('Model de deblocare salvat.');
-    closeSettings();
+    try{
+      const hash = await sha256Hex(arr.join(','));
+      data.security = {type:'pattern', hash: hash};
+      saveData();
+      alert('Model de deblocare salvat (stocat criptat).');
+      closeSettings();
+    }catch(e){
+      alert('Nu se poate seta un model aici — deschide aplicația prin linkul https (nu fișierul local) pentru ca blocarea securizată să funcționeze.');
+    }
   }
 });
 
@@ -675,7 +769,7 @@ function unlockApp(){
 }
 
 function checkLock(){
-  if(data.security && data.security.type && data.security.value){
+  if(data.security && data.security.type && data.security.hash){
     document.getElementById('mainWrap').style.display = 'none';
     document.getElementById('lockScreen').style.display = 'flex';
     document.getElementById('pinErr').style.display = 'none';
@@ -696,30 +790,58 @@ function checkLock(){
     }
 }
 
-function verifyPin(){
+async function verifyPin(){
   const val = document.getElementById('pinInput').value;
   const errEl = document.getElementById('pinErr');
-  if(data.security && val === data.security.value){
-    errEl.style.display = 'none';
-    unlockApp();
-  }else{
-    errEl.style.display = 'block';
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinInput').focus();
+  if(!val){ return; }
+  try{
+    const hash = await sha256Hex(val);
+    if(data.security && hash === data.security.hash){
+      errEl.style.display = 'none';
+      unlockApp();
+    }else{
+      errEl.style.display = 'block';
+      document.getElementById('pinInput').value = '';
+      document.getElementById('pinInput').focus();
+    }
+  }catch(e){
+    alert('Blocarea securizată necesită deschiderea aplicației prin linkul https.');
   }
 }
 
-function setPin(){
+async function setPin(){
   const val = document.getElementById('pinSettingInput').value.trim();
   if(!val || !/^[0-9]{4,6}$/.test(val)){
     alert('PIN-ul trebuie să conțină doar cifre, 4-6 caractere.');
     return;
   }
-  data.security = {type:'pin', value: val};
-  saveData();
-  document.getElementById('pinSettingInput').value = '';
-  alert('Cod PIN setat. Se va cere la următoarea deschidere a aplicației.');
-  closeSettings();
+  try{
+    const hash = await sha256Hex(val);
+    data.security = {type:'pin', hash: hash};
+    saveData();
+    document.getElementById('pinSettingInput').value = '';
+    alert('Cod PIN setat (stocat criptat). Se va cere la următoarea deschidere a aplicației.');
+    closeSettings();
+  }catch(e){
+    alert('Nu se poate seta un cod aici — deschide aplicația prin linkul https (nu fișierul local) pentru ca blocarea securizată să funcționeze.');
+  }
+}
+
+function downloadAppCopy(){
+  try{
+    const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }catch(e){
+    alert('Descărcarea nu a putut fi pornită pe acest browser.');
+  }
 }
 
 loadData();

@@ -229,7 +229,7 @@
 
   <div class="combined-card">
     <div class="lbl">Total comun</div>
-    <div class="num" id="combinedTotal">0<span>lei</span></div>
+    <div class="num" id="combinedTotal">0</div>
   </div>
 
   <div class="persons">
@@ -240,7 +240,7 @@
         </div>
         <button class="add-plus" onclick="openAdd(0)" aria-label="Adaugă sumă pentru persoana 1">+</button>
       </div>
-      <div class="num" id="p0total">0<span>lei</span></div>
+      <div class="num" id="p0total">0</div>
       <button class="history-link" onclick="openHistory(0)">Istoric ›</button>
     </div>
     <div class="person-card p1">
@@ -250,7 +250,7 @@
         </div>
         <button class="add-plus" onclick="openAdd(1)" aria-label="Adaugă sumă pentru persoana 2">+</button>
       </div>
-      <div class="num" id="p1total">0<span>lei</span></div>
+      <div class="num" id="p1total">0</div>
       <button class="history-link" onclick="openHistory(1)">Istoric ›</button>
     </div>
   </div>
@@ -267,7 +267,7 @@
       </div>
     </div>
     <div class="field">
-      <label>Sumă (lei)</label>
+      <label>Sumă</label>
       <input type="number" id="amountInput" inputmode="decimal" placeholder="0" min="0" step="0.01">
     </div>
     <div class="field">
@@ -426,9 +426,9 @@ function render(){
   let t0 = 0, t1 = 0;
   monthEntries.forEach(e => { if(e.person === 0) t0 += Number(e.amount); else t1 += Number(e.amount); });
 
-  document.getElementById('p0total').innerHTML = fmt(t0) + '<span>lei</span>';
-  document.getElementById('p1total').innerHTML = fmt(t1) + '<span>lei</span>';
-  document.getElementById('combinedTotal').innerHTML = fmt(t0+t1) + '<span>lei</span>';
+  document.getElementById('p0total').innerHTML = fmt(t0);
+  document.getElementById('p1total').innerHTML = fmt(t1);
+  document.getElementById('combinedTotal').innerHTML = fmt(t0+t1);
 }
 
 function changeMonth(delta){
@@ -534,7 +534,7 @@ function renderHistory(){
     const dayLabel = dateObj.toLocaleDateString('ro-RO',{day:'numeric',month:'long',weekday:'short'});
     let html = '<div class="day-header">'+dayLabel+'</div>';
     byDay[day].sort((a,b)=> b.id.localeCompare(a.id)).forEach(e => {
-      html += '<div class="entry-row"><div class="entry-left"><span class="num">'+fmt(e.amount)+' <span style="font-size:11px;color:var(--text-dim);font-weight:400">lei</span></span></div><button class="del" onclick="confirmDeleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div>';
+      html += '<div class="entry-row"><div class="entry-left"><span class="num">'+fmt(e.amount)+'</span></div><button class="del" onclick="confirmDeleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div>';
     });
     group.innerHTML = html;
     listEl.appendChild(group);
@@ -544,7 +544,7 @@ function renderHistory(){
 async function confirmDeleteEntry(id){
   const entry = data.entries.find(e => e.id === id);
   if(!entry) return;
-  const ok = confirm('Sigur vrei să ștergi suma de ' + fmt(entry.amount) + ' lei? Această acțiune nu poate fi anulată.');
+  const ok = confirm('Sigur vrei să ștergi suma de ' + fmt(entry.amount) + '? Această acțiune nu poate fi anulată.');
   if(!ok) return;
   data.entries = data.entries.filter(e => e.id !== id);
   await saveData();

@@ -73,7 +73,8 @@
     border:1px solid var(--gold-dim);
     border-radius:16px;padding:18px 18px 16px;margin-bottom:14px;
   }
-  .combined-card .lbl{color:var(--gold);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .combined-card{text-align:center;}
+  .combined-card .lbl{color:var(--gold);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.9;}
   .combined-card .num{
     font-family:'Roboto Slab',serif;font-weight:700;font-size:34px;
     margin-top:4px;color:var(--text);
@@ -82,19 +83,32 @@
 
   .persons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
   .person-card{
-    border-radius:14px;padding:14px;border:1px solid var(--border);
+    border-radius:14px;padding:16px 14px;border:1px solid var(--border);border-top-width:3px;
+    text-align:center;transition:box-shadow .2s ease;
   }
-  .person-card.p0{background:var(--p0-bg);border-color:#2C4744;}
-  .person-card.p1{background:var(--p1-bg);border-color:#4A3527;}
-  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-  .person-card .name{font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;}
+  .person-card.p0{background:var(--p0-bg);border-color:#2C4744;border-top-color:var(--p0);}
+  .person-card.p1{background:var(--p1-bg);border-color:#4A3527;border-top-color:var(--p1);}
+  .card-top{display:flex;flex-direction:column;align-items:center;margin-bottom:10px;}
+  .person-card .name{font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;}
+  .card-btns{display:flex;flex-direction:row;justify-content:center;gap:14px;}
   .add-plus{
     width:38px;height:38px;border-radius:50%;border:none;
     background:var(--gold);color:#241A08;font-size:20px;font-weight:700;
     line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    padding:0;flex-shrink:0;
+    padding:0;flex-shrink:0;transition:box-shadow .15s ease, transform .1s ease;
   }
-  .add-plus:active{transform:scale(0.93);}
+  .add-plus:active{transform:scale(0.93);box-shadow:0 0 0 7px rgba(217,165,68,.28);}
+  .add-plus:hover{box-shadow:0 0 10px rgba(217,165,68,.5);}
+  .add-minus{
+    width:38px;height:38px;border-radius:50%;border:1px solid var(--danger);
+    background:transparent;color:var(--danger);font-size:20px;font-weight:700;
+    line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    padding:0;flex-shrink:0;transition:box-shadow .15s ease, transform .1s ease;
+  }
+  .add-minus:active{transform:scale(0.93);box-shadow:0 0 0 7px rgba(194,84,80,.25);}
+  .add-minus:hover{box-shadow:0 0 10px rgba(194,84,80,.45);}
+  .income-line{font-size:13px;color:var(--text-dim);margin-top:5px;font-weight:600;}
+  .expense-line{font-size:13px;color:var(--danger);margin-top:3px;font-weight:600;}
   .person-card.p0 .name{color:var(--p0);}
   .person-card.p1 .name{color:var(--p1);}
   .dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
@@ -114,12 +128,16 @@
     text-align:center;color:var(--text-faint);font-size:14px;
     padding:36px 12px;border:1px dashed var(--border);border-radius:14px;
   }
-  .day-group{margin-bottom:14px;}
-  .day-header{font-size:12px;color:var(--text-faint);margin:0 2px 6px;font-weight:500;}
+  .day-group{margin-bottom:18px;}
+  .day-header{
+    font-size:12px;color:var(--text-faint);margin:0 2px 8px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.03em;
+    padding-bottom:6px;border-bottom:1px solid var(--border);
+  }
   .entry-row{
     display:flex;align-items:center;justify-content:space-between;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:12px;padding:11px 13px;margin-bottom:6px;
+    background:var(--surface);border:1px solid var(--border);border-left-width:3px;
+    border-radius:12px;padding:11px 13px;margin-bottom:8px;
   }
   .entry-left{display:flex;align-items:center;gap:10px;}
   .entry-row .num{font-family:'Roboto Slab',serif;font-weight:700;font-size:15px;}
@@ -127,14 +145,26 @@
   .entry-row .del:active{color:var(--danger);}
 
   .sheet-overlay{
-    position:fixed;inset:0;background:rgba(0,0,0,.55);
-    display:none;align-items:flex-end;justify-content:center;z-index:50;
+    position:fixed;inset:0;background:rgba(0,0,0,0);
+    display:flex;align-items:flex-end;justify-content:center;z-index:50;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .25s ease, background-color .25s ease, visibility 0s linear .25s;
   }
-  .sheet-overlay.open{display:flex;}
+  .sheet-overlay.open{
+    opacity:1;visibility:visible;pointer-events:auto;background:rgba(0,0,0,.55);
+    transition:opacity .25s ease, background-color .25s ease;
+  }
   .sheet{
     background:var(--surface);width:100%;max-width:480px;
-    border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    border-radius:20px 20px 0 0;padding:12px 18px calc(20px + env(safe-area-inset-bottom));
     border-top:1px solid var(--border);
+    transform:translateY(100%);
+    transition:transform .32s cubic-bezier(.32,.72,0,1);
+  }
+  .sheet-overlay.open .sheet{transform:translateY(0);}
+  .sheet-handle{
+    width:36px;height:4px;border-radius:2px;background:var(--border);
+    margin:0 auto 16px;
   }
   .sheet h2{font-family:'Roboto Slab',serif;font-size:18px;margin:0 0 16px;}
   .field{margin-bottom:14px;}
@@ -166,6 +196,15 @@
   .names-field{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
   .names-field .dot{width:10px;height:10px;}
 
+  .settings-card{
+    background:var(--surface-2);border:1px solid var(--border);
+    border-radius:14px;padding:14px;margin-bottom:12px;
+  }
+  .settings-card-title{
+    font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:12px;opacity:.9;
+  }
+
   .lock-screen{
     position:fixed;inset:0;background:var(--bg);
     display:flex;align-items:center;justify-content:center;z-index:100;
@@ -175,16 +214,24 @@
     max-width:320px;width:100%;text-align:center;
   }
   .lock-dot{
-    width:52px;height:52px;border-radius:50%;background:var(--surface-2);
+    width:56px;height:56px;border-radius:50%;background:var(--surface-2);
     border:1px solid var(--gold-dim);margin:0 auto 16px;
     display:flex;align-items:center;justify-content:center;
-    font-family:'Roboto Slab',serif;font-weight:700;font-size:20px;color:var(--gold);
   }
-  .lock-dot::before{content:'V';}
   .lock-card h2{font-family:'Roboto Slab',serif;font-size:19px;margin:0 0 6px;}
   .lock-card p{color:var(--text-dim);font-size:13px;margin:0 0 20px;}
-  .lock-card input{text-align:center;font-size:22px;letter-spacing:8px;}
   .lock-card .err{display:none;margin-top:10px;}
+  .pin-dots-wrap{position:relative;}
+  .pin-dots{display:flex;justify-content:center;gap:10px;}
+  .pin-dot{
+    width:16px;height:16px;border-radius:50%;border:2px solid var(--border);
+    background:var(--surface-2);transition:background .15s ease,border-color .15s ease,transform .15s ease;
+  }
+  .pin-dot.filled{background:var(--gold);border-color:var(--gold);transform:scale(1.1);}
+  .pin-real-input{
+    position:absolute;inset:-10px;opacity:0;border:none;background:transparent;
+    width:calc(100% + 20px);height:calc(100% + 20px);padding:0;min-height:0;
+  }
 
   .pattern-wrap{display:flex;justify-content:center;margin-top:6px;}
   .pattern-svg{width:220px;height:220px;touch-action:none;}
@@ -196,12 +243,23 @@
 <body>
 <div class="lock-screen" id="lockScreen" style="display:none;">
   <div class="lock-card">
-    <div class="lock-dot"></div>
+    <div class="lock-dot">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#D9A544" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="11" width="14" height="9" rx="2"></rect>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+      </svg>
+    </div>
     <h2>Registru vânzări</h2>
     <p id="lockSubtitle">Introdu codul PIN pentru a intra</p>
     <div id="lockPinSection">
-      <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••" onkeydown="if(event.key==='Enter')verifyPin()">
-      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="verifyPin()">Deblochează</button>
+      <div class="pin-dots-wrap" onclick="document.getElementById('pinInput').focus()">
+        <div class="pin-dots" id="pinDots">
+          <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+          <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+        </div>
+        <input type="tel" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" class="pin-real-input" oninput="updatePinDots()" onkeydown="if(event.key==='Enter')verifyPin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="verifyPin()">Deblochează</button>
     </div>
     <div id="lockPatternSection" style="display:none;">
       <div class="pattern-wrap">
@@ -238,9 +296,14 @@
         <div class="name" onclick="openSettings()" style="cursor:pointer;">
           <span class="dot"></span><span id="p0label">Persoana 1</span>
         </div>
-        <button class="add-plus" onclick="openAdd(0)" aria-label="Adaugă sumă pentru persoana 1">+</button>
+        <div class="card-btns">
+          <button class="add-plus" onclick="openAdd(0,'venit')" aria-label="Adaugă sumă pentru persoana 1">+</button>
+          <button class="add-minus" onclick="openAdd(0,'cheltuiala')" aria-label="Adaugă cheltuială pentru persoana 1">−</button>
+        </div>
       </div>
       <div class="num" id="p0total">0</div>
+      <div class="income-line" id="p0income">↑ Adaos: 0</div>
+      <div class="expense-line" id="p0expense">↓ Scăderi: 0</div>
       <button class="history-link" onclick="openHistory(0)">Istoric ›</button>
     </div>
     <div class="person-card p1">
@@ -248,9 +311,14 @@
         <div class="name" onclick="openSettings()" style="cursor:pointer;">
           <span class="dot"></span><span id="p1label">Persoana 2</span>
         </div>
-        <button class="add-plus" onclick="openAdd(1)" aria-label="Adaugă sumă pentru persoana 2">+</button>
+        <div class="card-btns">
+          <button class="add-plus" onclick="openAdd(1,'venit')" aria-label="Adaugă sumă pentru persoana 2">+</button>
+          <button class="add-minus" onclick="openAdd(1,'cheltuiala')" aria-label="Adaugă cheltuială pentru persoana 2">−</button>
+        </div>
       </div>
       <div class="num" id="p1total">0</div>
+      <div class="income-line" id="p1income">↑ Adaos: 0</div>
+      <div class="expense-line" id="p1expense">↓ Scăderi: 0</div>
       <button class="history-link" onclick="openHistory(1)">Istoric ›</button>
     </div>
   </div>
@@ -258,7 +326,8 @@
 
 <div class="sheet-overlay" id="addOverlay">
   <div class="sheet">
-    <h2>Adaugă o sumă</h2>
+    <div class="sheet-handle"></div>
+    <h2 id="addTitle">Adaugă o sumă</h2>
     <div class="field">
       <label>Cui îi aparține</label>
       <div class="toggle-group">
@@ -267,7 +336,7 @@
       </div>
     </div>
     <div class="field">
-      <label>Sumă</label>
+      <label id="amountLabel">Sumă</label>
       <input type="number" id="amountInput" inputmode="decimal" placeholder="0" min="0" step="0.01">
     </div>
     <div class="field">
@@ -284,30 +353,24 @@
 
 <div class="sheet-overlay" id="settingsOverlay">
   <div class="sheet">
+    <div class="sheet-handle"></div>
     <h2>Setări</h2>
-    <div class="names-field">
-      <span class="dot" style="background:var(--p0)"></span>
-      <input type="text" id="nameInput0" placeholder="Persoana 1">
-    </div>
-    <div class="names-field">
-      <span class="dot" style="background:var(--p1)"></span>
-      <input type="text" id="nameInput1" placeholder="Persoana 2">
-    </div>
-    <div class="sheet-actions">
-      <button class="btn btn-secondary" onclick="closeSettings()">Închide</button>
-      <button class="btn btn-primary" onclick="saveSettings()">Salvează</button>
-    </div>
-    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
-      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Backup date</label>
-      <div class="sheet-actions">
-        <button class="btn btn-secondary" onclick="exportBackup()">⬇ Descarcă backup</button>
-        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Restaurează</button>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Nume Vânzători</div>
+      <div class="names-field">
+        <span class="dot" style="background:var(--p0)"></span>
+        <input type="text" id="nameInput0" placeholder="Persoana 1">
       </div>
-      <div style="font-size:12px;color:var(--text-faint);margin-top:8px;">Salvează fișierul într-un loc sigur (email, Drive). Restaurarea înlocuiește complet datele curente.</div>
-      <input type="file" id="importFile" accept=".json,application/json,text/plain" style="display:none" onchange="handleImportFile(event)">
+      <div class="names-field" style="margin-bottom:14px;">
+        <span class="dot" style="background:var(--p1)"></span>
+        <input type="text" id="nameInput1" placeholder="Persoana 2">
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="saveSettings()">Salvează numele</button>
     </div>
-    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
-      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Blocare la deschidere</label>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Securitate Acces</div>
       <div class="toggle-group" style="margin-bottom:12px;">
         <button type="button" class="btn btn-secondary" onclick="showSecurityMode('none')">Fără</button>
         <button type="button" class="btn btn-secondary" onclick="showSecurityMode('pin')">Cod PIN</button>
@@ -327,16 +390,30 @@
         </div>
       </div>
     </div>
-    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:14px;">
-      <label style="display:block;font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;">Copie a aplicației</label>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Backup Date</div>
+      <div class="sheet-actions">
+        <button class="btn btn-secondary" onclick="exportBackup()">⬇ Descarcă backup</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆ Restaurează</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-faint);margin-top:8px;">Salvează fișierul într-un loc sigur (email, Drive). Restaurarea înlocuiește complet datele curente.</div>
+      <input type="file" id="importFile" accept=".json,application/json,text/plain" style="display:none" onchange="handleImportFile(event)">
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">Copie Aplicație</div>
       <button class="btn btn-secondary" style="width:100%;" onclick="downloadAppCopy()">⬇ Descarcă aplicația (index.html)</button>
       <div style="font-size:12px;color:var(--text-faint);margin-top:8px;">Salvează chiar acest fișier direct pe telefon — util dacă vrei să-l trimiți pe alt dispozitiv sau să ai o copie de rezervă a aplicației în sine (nu a datelor).</div>
     </div>
+
+    <button class="btn btn-secondary" style="width:100%;" onclick="closeSettings()">Închide</button>
   </div>
 </div>
 
 <div class="sheet-overlay" id="monthOverlay">
   <div class="sheet">
+    <div class="sheet-handle"></div>
     <h2>Alege luna</h2>
     <div id="monthList" style="max-height:50vh;overflow:auto;"></div>
     <div class="sheet-actions">
@@ -347,6 +424,7 @@
 
 <div class="sheet-overlay" id="historyOverlay">
   <div class="sheet">
+    <div class="sheet-handle"></div>
     <h2 id="historyTitle">Istoric</h2>
     <div id="historyList" style="max-height:55vh;overflow:auto;margin-bottom:10px;"></div>
     <div class="sheet-actions">
@@ -423,12 +501,21 @@ function render(){
   document.getElementById('p1label').textContent = data.names[1];
 
   const monthEntries = entriesForMonth(currentMonth);
-  let t0 = 0, t1 = 0;
-  monthEntries.forEach(e => { if(e.person === 0) t0 += Number(e.amount); else t1 += Number(e.amount); });
+  let in0=0, out0=0, in1=0, out1=0;
+  monthEntries.forEach(e => {
+    const amt = Number(e.amount);
+    const isExpense = e.type === 'cheltuiala';
+    if(e.person === 0){ if(isExpense) out0 += amt; else in0 += amt; }
+    else { if(isExpense) out1 += amt; else in1 += amt; }
+  });
 
-  document.getElementById('p0total').innerHTML = fmt(t0);
-  document.getElementById('p1total').innerHTML = fmt(t1);
-  document.getElementById('combinedTotal').innerHTML = fmt(t0+t1);
+  document.getElementById('p0total').innerHTML = fmt(in0-out0);
+  document.getElementById('p1total').innerHTML = fmt(in1-out1);
+  document.getElementById('combinedTotal').innerHTML = fmt(in0+in1);
+  document.getElementById('p0income').textContent = '↑ Adaos: ' + fmt(in0);
+  document.getElementById('p1income').textContent = '↑ Adaos: ' + fmt(in1);
+  document.getElementById('p0expense').textContent = '↓ Scăderi: ' + fmt(out0);
+  document.getElementById('p1expense').textContent = '↓ Scăderi: ' + fmt(out1);
 }
 
 function changeMonth(delta){
@@ -459,11 +546,16 @@ function openMonthPicker(){
 }
 function closeMonthPicker(){ document.getElementById('monthOverlay').classList.remove('open'); }
 
-function openAdd(person){
+let currentEntryType = 'venit';
+
+function openAdd(person, type){
+  currentEntryType = type === 'cheltuiala' ? 'cheltuiala' : 'venit';
   selectPerson(person === 1 ? 1 : 0);
   document.getElementById('amountInput').value = '';
   document.getElementById('dateInput').value = todayDateStr();
   document.getElementById('addErr').style.display = 'none';
+  document.getElementById('addTitle').textContent = currentEntryType === 'cheltuiala' ? 'Adaugă o cheltuială' : 'Adaugă o sumă';
+  document.getElementById('amountLabel').textContent = currentEntryType === 'cheltuiala' ? 'Sumă cheltuită' : 'Sumă';
   document.getElementById('addOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('amountInput').focus(), 150);
 }
@@ -493,7 +585,8 @@ async function submitAdd(){
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
     person: selectedPerson,
     amount: Math.round(amount*100)/100,
-    date: dateVal
+    date: dateVal,
+    type: currentEntryType
   };
   data.entries.push(entry);
   currentMonth = dateVal.slice(0,7);
@@ -518,7 +611,7 @@ function renderHistory(){
   const listEl = document.getElementById('historyList');
   listEl.innerHTML = '';
   if(entries.length === 0){
-    listEl.innerHTML = '<div class="empty">Nicio vânzare înregistrată în această lună.</div>';
+    listEl.innerHTML = '<div class="empty">Nicio sumă înregistrată în această lună.</div>';
     return;
   }
   const byDay = {};
@@ -534,7 +627,10 @@ function renderHistory(){
     const dayLabel = dateObj.toLocaleDateString('ro-RO',{day:'numeric',month:'long',weekday:'short'});
     let html = '<div class="day-header">'+dayLabel+'</div>';
     byDay[day].sort((a,b)=> b.id.localeCompare(a.id)).forEach(e => {
-      html += '<div class="entry-row"><div class="entry-left"><span class="num">'+fmt(e.amount)+'</span></div><button class="del" onclick="confirmDeleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div>';
+      const isExpense = e.type === 'cheltuiala';
+      const sign = isExpense ? '−' : '+';
+      const color = isExpense ? 'var(--danger)' : 'var(--gold)';
+      html += '<div class="entry-row" style="border-left-color:'+color+'"><div class="entry-left"><span class="num" style="color:'+color+'">'+sign+' '+fmt(e.amount)+'</span></div><button class="del" onclick="confirmDeleteEntry(\''+e.id+'\')" aria-label="Șterge">✕</button></div>';
     });
     group.innerHTML = html;
     listEl.appendChild(group);
@@ -607,6 +703,7 @@ function isValidBackup(obj){
     if(e.person !== 0 && e.person !== 1) return false;
     if(typeof e.amount !== 'number' || !isFinite(e.amount) || e.amount <= 0) return false;
     if(typeof e.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(e.date)) return false;
+    if(e.type !== undefined && e.type !== 'venit' && e.type !== 'cheltuiala') return false;
   }
   if(obj.security !== undefined && obj.security !== null){
     if(typeof obj.security !== 'object') return false;
@@ -762,8 +859,16 @@ function showSecurityMode(mode){
   }
 }
 
+function updatePinDots(){
+  const val = document.getElementById('pinInput').value;
+  const dots = document.querySelectorAll('#pinDots .pin-dot');
+  dots.forEach((d,i) => d.classList.toggle('filled', i < val.length));
+  if(val.length === 6){ verifyPin(); }
+}
+
 function unlockApp(){
   document.getElementById('pinInput').value = '';
+  updatePinDots();
   document.getElementById('lockScreen').style.display = 'none';
   document.getElementById('mainWrap').style.display = '';
 }
@@ -778,6 +883,8 @@ function checkLock(){
       document.getElementById('lockSubtitle').textContent = 'Introdu codul PIN pentru a intra';
       document.getElementById('lockPinSection').style.display = 'block';
       document.getElementById('lockPatternSection').style.display = 'none';
+      document.getElementById('pinInput').value = '';
+      updatePinDots();
       setTimeout(()=>document.getElementById('pinInput').focus(), 100);
     }else{
       document.getElementById('lockSubtitle').textContent = 'Desenează modelul pentru a intra';
@@ -802,6 +909,7 @@ async function verifyPin(){
     }else{
       errEl.style.display = 'block';
       document.getElementById('pinInput').value = '';
+      updatePinDots();
       document.getElementById('pinInput').focus();
     }
   }catch(e){
